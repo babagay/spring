@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <bean id="myPet" class="com.example.spring.introduction.Cat"
+          scope="singleton"
+          init-method="initXML"
+          destroy-method="destroyXML"
+    />
+
+    <!--    Пример бина-контейнера, который содержит другие бины  -->
+    <!--    Вариант 1. Внедрение через конструктор -->
+    <!--    <bean id="thePerson" class="com.example.spring.introduction.Person" autowire="constructor"  />-->
+    <!--    Вариант 2. Внедрение через конструктор. Прямо указываем тип бинов, передаваемых в конструктор -->
+    <!--    <bean id="thePerson" class="com.example.spring.introduction.Person">-->
+    <!--        <constructor-arg name="_pet" type="com.example.spring.introduction.Pet" ref="myPet"/>-->
+    <!--    </bean>-->
+    <!--    Для вариантов 1 и 2 нужен конструктор с параматрами. Конкретно, с параметром Pet -->
+
+    <!--    Вариант 3. Скармливаем первичный бин через сеттер setPet. также, нужен дефолтный конструктор -->
+    <!--    Имя сеттера генерится на основе атрибута property.name и префикса 'set'-->
+    <!--    Вариант 3.1 -->
+    <bean id="thePerson" class="com.example.spring.introduction.Person"
+          scope="singleton"
+          init-method="init"
+          destroy-method="destroy"
+    >
+        <property name="thePet" ref="myPet"/>
+        <property name="name" value="${person.name}"/>
+        <property name="age" value="${person.age}"/>
+    </bean>
+    <!--    Вариант 3.2 -->
+    <!--    В этом случае имя сеттера можнро опустить - метод ищется по сигнатуре -->
+    <!--    <bean id="thePerson" class="com.example.spring.introduction.Person" autowire="byType" />-->
+
+
+</beans>

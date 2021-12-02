@@ -1,0 +1,8 @@
+{
+    "properties": [
+        {
+            "name": "hibernate.jdbc.use_get_generated_keys",
+            "type": "java.lang.String",
+            "description": "Description for hibernate.jdbc.use_get_generated_keys."
+    }
+] }
