@@ -1,7 +1,9 @@
---- не сработал конфиг
---- https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#application-properties
+#--- не сработал конфиг
+#--- https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#application-properties
+# [!] здесь надо превращать кебаб-кейс в кэмэл-кейс
 spring:
   datasource:
+#    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://localhost\\SQLEXPRESS:1433;databaseName=my_db;responseBuffering=adaptive
     username: bestuser
@@ -15,3 +17,6 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.SQLServerDialect
         current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+#  config:
+#    activate:
+#      on-profile: prod

@@ -1,4 +1,4 @@
-package com.example.spring.introduction;
+package com.example.spring.config;
 
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,12 +12,14 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration // указание на то, что это конфигурационный класс
 @ComponentScan("com.example.spring") // пакет, где искать бины
-@PropertySource("classpath:application.properties") // источник пропертей
-//@PropertySource("classpath:application.yml") // с этим не получилось
+//@PropertySource("classpath:application.yml") // с этим не заводится
+@PropertySource("classpath:application.properties") // рабочий источник пропертей
 @EnableAspectJAutoProxy // включить АОП
 @EntityScan(basePackages = {"com.example.spring.db"})
 //@EnableWebMvc
-public class ApplicationConfiguration {
+// EnableConfigurationProperties
+// ConfigurationProperties
+public class AppConfig {
 
 
 }

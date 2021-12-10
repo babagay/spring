@@ -1,13 +1,13 @@
 package com.example.spring.aop;
 
-import com.example.spring.introduction.ApplicationConfiguration;
+import com.example.spring.config.AppConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.List;
 
 public class UniversityTest {
 
-    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
     private final static University university = context.getBean("university", University.class);
 

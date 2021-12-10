@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+// НЕ используется
 public class HibernateUtils {
 
     private static SessionFactory sessionFactory;

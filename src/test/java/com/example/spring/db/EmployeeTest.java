@@ -1,6 +1,6 @@
 package com.example.spring.db;
 
-import com.example.spring.introduction.ApplicationConfiguration;
+import com.example.spring.config.AppConfig;
 import com.example.spring.service.EmployeeService;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -20,8 +21,11 @@ import java.util.Optional;
  */
 class EmployeeTest {
 
-    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfiguration.class);
+    static Session session;
+
+    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
     //private final static Session session = context.getBean(Session.class);
+    // альтернативный вариант получения сессии
     private final static Session currentSession = context.getBean(Session.class, "currentSession");
     private final static SessionFactory sessionFactory = context.getBean(SessionFactory.class);
     private final static EntityManagerFactory entityManagerFactory = context.getBean(EntityManagerFactory.class);
@@ -40,10 +44,12 @@ class EmployeeTest {
 //    }
 
     public static void main(String[] args) throws Exception {
+
+
         try {
             //getUserByIdTest();
             //getEmployeeByNameTest();
-            //getEntity();
+            //getDetailsEntityTest();
             //addEmployee();
             //testDao();
             //testRepository();
@@ -53,31 +59,37 @@ class EmployeeTest {
             //dropUser2();
             //dropUser3();
             //dropUser4();
+            //dropDetails();
             //getUserWithHQL();
             //getUserCollection();
             // testUpdate(); // НЕ заработал
             //testGetDetails();
+            //getUserThroughDetailsTest();
             // createUserWithDetailsTest();
             // createUserWithDetailsTest2();
             // createUserWithDetailsTest3();
-            createUserWithDetailsTest4();
+            //createUserWithDetailsTest4();
             //biDirectLinkTest();
             //existTest();
+
+            //addUserToDepartmentTest();
+            //getDepartmentTest();
+            deleteDepartmentTest();
 
         }
         finally {
             System.out.println("== FINALLY ==");
-            Transaction transaction = getSession().getTransaction();
-            System.out.println("Transaction: " + transaction);
-
+            closeSession();
             context.close();
-            sessionFactory.close();
-            System.out.println("Session Factory closed");
+            System.out.println("== Session Factory closed");
         }
     }
 
     private static Session getSession() {
-        Session session;
+
+        if(session != null)
+            return session;
+
         try {
             // это странно, но сессия не берется -
             // каждый раз она открывается
@@ -89,6 +101,19 @@ class EmployeeTest {
             System.out.println("session = openSession()");
         }
         return session;
+    }
+
+    private static void closeSession(){
+        if (session != null){
+            Transaction transaction = session.getTransaction();
+            if (transaction != null) {
+                System.out.println("== Transaction commit: " + transaction);
+                if(transaction.isActive()) transaction.commit();
+            }
+            session.close();
+        }
+
+        sessionFactory.close();
     }
 
     // Взять сущность + связанную сущность из другой таблицы
@@ -195,7 +220,7 @@ class EmployeeTest {
         Employee user = new Employee();
         user.setName("Sofia");
         user.setSurname("Blank");
-        user.setDepartment("Fiction science");
+
 
         Session session = getSession();
         session.beginTransaction();
@@ -232,7 +257,7 @@ class EmployeeTest {
         Employee user = new Employee();
         user.setName("Oynir");
         user.setSurname("Runduk");
-        user.setDepartment("Cosmos Investigator");
+        user.setDepartment(new Department());
         employeeService.save(user);
         System.out.println(user); // user содержит вновь присвоенный id
     }
@@ -241,7 +266,7 @@ class EmployeeTest {
         Employee user = new Employee();
         user.setName("Jilly");
         user.setSurname("Idol");
-        user.setDepartment("Pop culture marketing");
+        user.setDepartment(new Department());
 
 
         employeeService.create(user);
@@ -334,6 +359,11 @@ class EmployeeTest {
 
     }
 
+    static void getUserThroughDetailsTest() {
+        EmployeeDetails details = employeeService.detailsById(106L);
+        System.out.println(details.getUser());
+    }
+
     /**
      * SQLGrammarException: error performing isolated work
      */
@@ -342,7 +372,7 @@ class EmployeeTest {
         Employee user = new Employee();
         user.setName("Chingiz");
         user.setSurname("Itmatov");
-        user.setDepartment("Writting");
+        user.setDepartment(new Department());
 
         EmployeeDetails details = new EmployeeDetails();
         details.setCity("Almata");
@@ -376,7 +406,7 @@ class EmployeeTest {
         Employee user = new Employee();
         user.setName("German");
         user.setSurname("Titov");
-        user.setDepartment("Space");
+        user.setDepartment(new Department());
 
         EmployeeDetails details = new EmployeeDetails();
         details.setCity("Habarovsk");
@@ -397,7 +427,6 @@ class EmployeeTest {
         Employee user = new Employee();
         user.setName("Chevald");
         user.setSurname("Croff");
-        user.setDepartment("");
 
         EmployeeDetails details = new EmployeeDetails();
         details.setCity("Oslo");
@@ -420,7 +449,7 @@ class EmployeeTest {
         Employee user = new Employee();
         user.setName("Chevald");
         user.setSurname("Croff");
-        user.setDepartment("Вдеп 1");
+        user.setDepartment(new Department());
 
         EmployeeDetails details = new EmployeeDetails();
         details.setCity("Oslo");
@@ -434,6 +463,7 @@ class EmployeeTest {
         // System.out.println(usr);
     }
 
+    // [!] для взятия сущности используется заинжэктанный в даошку entity manager
     // Благодаря добавлению поля Employee user, помеченного @OneToOne, в EmployeeDetails классе
     // employee и details ОБА знают друг о друге
     // ТОГДА, можно через details влиять на employee
@@ -454,14 +484,138 @@ class EmployeeTest {
         System.out.println("== details exists: " + r);
     }
 
-    // Использован entity manager, полученный из DataConfig
-    static void getEntity() {
+    // [!] Использован бин EntityManagerFactory, переопределенный DataConfig
+    static void getDetailsEntityTest() {
         EmployeeDetails dt = entityManagerFactory.createEntityManager().find(EmployeeDetails.class, 103L);
         System.out.println("== " + dt);
 
+        System.out.println("=============");
+        System.out.println(currentSession.equals(getSession())); // FALSE т.е. это 2 разных объекта - 2 сессии
+        System.out.println(currentSession.equals(currentSession)); //  TRUE
+
         // UnknownEntityTypeException: Unable to locate persister: com.example.spring.db.EmployeeDetails
+        // [!] это было вылечено путем добавления сущностей в currentSession бин через вызов addAnnotatedClass(Employee.class)
+
         // EmployeeDetails d = currentSession.get(EmployeeDetails.class, 103L);
         // System.out.println("== " + d);
     }
 
+    /**
+     * [!] для взятия сущности использован бин Session
+     *
+     * Удаляем детали
+     * Связанный юзер должен остаться
+     * в случае, если со стороны EmployeeDetails.user выставлена связь cascade = {CascadeType.PERSIST, CascadeType.REFRESH}
+     * (!) Почему-то hibernate завалил запись details, не смотря на то, что в Employee осталась ссылка на эту запись
+     *     И после этого, при попытке взять юзера, ссылающегося на данную запись из details, возникло исключение
+     *     No row with the given identifier exists: [EmployeeDetails#106]
+     * Т.о. если уже мы контролируем целостность данных самостоятельно, надо сперва выносить 106 details_id в соответсвующей записи Employee
+     * (!) Если выставить CascadeType.ALL,
+     *      пользователь будет снесен вместе с деталями
+     *      и при попытке взять его будет исключение No row with the given identifier exists: [EmployeeDetails#107]
+     *      Т.е. юзер опять остался! Т.е. код НЕ СРАБОТАЛ. hiber разрывает целостность данных
+     *      Оказалось, у т employees отсутсвовал CONSTRAINT
+     *      После его восстановления все заработало - юзер был удален каскадно
+     * Но тут другая проблема.
+     * Даже, если поставить cascade = {CascadeType.PERSIST, CascadeType.REFRESH},
+     * срабатывает ограничение на уровне базы
+     * и юзер выносится все-равно
+     * [!] инетересно как сделать так чтобы
+     *      при удалении деталей удалялась запись из details
+     *      и при этом Employee.details_id сбрасывался в NULL, но сам юзер оставался
+     */
+    static void dropDetails() {
+        // step 1
+        employeeService.dropDetails(101L);
+
+        // step 2
+        Employee user = currentSession.get(Employee.class, 8L);
+
+        System.out.println("=================");
+        System.out.println(user);
+
+        currentSession.close();
+    }
+
+    static void addUserToDepartmentTest(){
+        Department department = new Department();
+        department.setMaxSalary(800);
+        department.setMinSalary(100);
+        department.setName("New2");
+
+        // Employee user = currentSession.get(Employee.class, 7);
+
+        Employee user = new Employee();
+        user.setName("Chevald2");
+        user.setSurname("Croff2");
+        // user.setDepartment(department); // [!] даже без этого работает вставка сперва в departments потом в Employee
+
+        Employee user2 = new Employee();
+        user2.setName("Elen2");
+        user2.setSurname("Smirnoff2");
+        // user2.setDepartment(department); // без этого работает вставка в обе таблицы
+
+        department.addUserToDepartment(user); // без этого вставка юзеров НЕ происходит. Создается только отдел
+        department.addUserToDepartment(user2);
+
+        currentSession.save(department);
+    }
+
+    static void getDepartmentTest(){
+        //getSession(); // инициализация сессии. Нужно, если используем session поле
+        currentSession.beginTransaction(); // работает и без этого
+        currentSession.setFlushMode(FlushModeType.AUTO);
+
+        // A - берем юзеров, связанных с отделом
+        // поле Department.employees помечено LAZY,
+        // но здесь ошибка НЕ возникает
+        Department dep = currentSession.get(Department.class, 5L);
+
+        System.out.println("== [" + dep.getName() + "]");
+        System.out.println("== Employees: " + dep.getEmployees());
+
+        // Б - берем отдел, связанный с юзером
+        // поле Employee.Department помечено LAZY
+        Employee user = employeeService.byId(6L); // LazyInitializationException: could not initialize proxy - no Session
+        // Employee user = currentSession.get(Employee.class, 6L); // [!] так LazyLoad exception НЕ возникает
+
+        currentSession.update(user); // во избежание ошибки could not initialize proxy - no session spring data jpa
+        // делается update(user), чтобы сохранить сессию
+        // https://coderedirect.com/questions/177229/lazyinitializationexception-could-not-initialize-proxy-no-session
+        System.out.println("== Dep: " + user.getDepartment().getName());
+
+        currentSession.getTransaction().commit(); // работает и без этого
+
+        // [!] как это решается в СЗ
+        // Но там все работает через сессию (причем, через один и тот же объект)
+        // А здесь можно делать запросы через разные объекты сессии, entityManager и репозиторий
+        //      что юзает под капотом Repository, понять сложно
+        //      TransactionManagerProvider.getTransactionManager().checkAndStartTrans
+        //          под капотом: session.setFlushMode(FlushMode.AUTO)
+        //
+        //		task.execute(HibernateUtil.getSessionFactory().getCurrentSession())
+        //
+        //		TransactionManagerProvider.getTransactionManager().commitTransaction
+        //          под капотом: session.getTransaction().commit()
+    }
+
+    // Тестирование удаления сущностей при Bi-directional свящи Many-to-One
+    // Удалится ли департамент юзера и все юзеры, входящие в этот отдел?
+    // Да
+    // По цепочке удалился юзер, связанный отдел и все связанные с отделом пользователи
+    // Т.к. стоит связь cascade ALL
+    // [!] Если убрать cascade ALL, заменив ее на безопасный набор вариантов, на одном из концов связи (Employee),
+    // тогда, при удалении юзера его отдел остаётся и юзеры этого отдела остаются
+    // (мы заменили в сущности Employee - оконечности связи Many, хранятеля FK - каскадность поля типа Department
+    // с CascadeType.ALL на {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+    // хотя, при этом каскадность у поля типа Set<Employee> employees у сущности Department стояла CascadeType.ALL, т.е со стороны One)
+    static void deleteDepartmentTest(){
+        currentSession.beginTransaction();
+        currentSession.setFlushMode(FlushModeType.AUTO);
+
+        Employee user = currentSession.get(Employee.class, 20L);
+        currentSession.delete(user);
+
+        currentSession.getTransaction().commit();
+    }
 }

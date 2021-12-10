@@ -38,7 +38,8 @@ public class EmployeeDetails {
     @OneToOne(
             targetEntity = com.example.spring.db.Employee.class,
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
+            // cascade = CascadeType.ALL, // (а) - удаление деталей повлечет за собой снос пользователя
+             cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, // (b) - чтобы при удалении деталей юзер оставался
             // название поля в классе Employee, хранящего связь с этой сущностью
             // По сути, этот атрибут говорит, что связь между сущностями уже сконфигурирована -
             // аннотациями поля Employee.details

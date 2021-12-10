@@ -1,5 +1,6 @@
 package com.example.spring.service;
 
+import com.example.spring.db.DepartmentRepository;
 import com.example.spring.db.DetailsDao;
 import com.example.spring.db.Employee;
 import com.example.spring.db.EmployeeDao;
@@ -19,19 +20,29 @@ import java.util.Optional;
 //@Scope(value = "session")
 public class EmployeeService extends AbstractService {
 
-
-    @Autowired
+    // @Autowired
     EmployeeRepository employeeRepository;
 
-    @Autowired
+    // @Autowired
     EmployeeDetailsRepository detailsRepository;
 
-    @Autowired
+    // @Autowired
     EmployeeDao employeeDao;
 
-    @Autowired
+    // @Autowired
     DetailsDao detailsDao;
 
+    @Autowired
+    public EmployeeService(EmployeeRepository employeeRepository,
+                           EmployeeDetailsRepository detailsRepository,
+                           DepartmentRepository departmentRepository,
+                           EmployeeDao employeeDao,
+                           DetailsDao detailsDao) {
+        this.employeeRepository = employeeRepository;
+        this.detailsRepository = detailsRepository;
+        this.employeeDao = employeeDao;
+        this.detailsDao = detailsDao;
+    }
 
     public Employee byId(long id) {
         return employeeDao.findById(id);
@@ -85,6 +96,10 @@ public class EmployeeService extends AbstractService {
 
     public void dropById(Long id) {
         employeeRepository.deleteById(id);
+    }
+
+    public void dropDetails(Long id){
+        detailsRepository.deleteById(id);
     }
 
     public void dropEntity(Employee user) {

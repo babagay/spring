@@ -1,10 +1,5 @@
 package com.example.spring.db;
 
-import com.example.spring.introduction.ApplicationConfiguration;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;

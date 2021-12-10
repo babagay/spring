@@ -21,14 +21,17 @@ import javax.persistence.PersistenceContext;
 @EnableTransactionManagement
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
+    // [!] можно генерировать такие методы,
+    // кликая на полях напротив поля Department department в классе Employee
+    boolean existsByDepartment(Department department);
+
+    Employee findBySurname(String surname); // метод также создан автоматом
+
     @Query("select e from Employee e where e.id = ?1")
     Employee retrieveById(Long id);
 
     @Query("SELECT e FROM Employee e WHERE LOWER(e.name) = LOWER(:name)")
     Employee retrieveByName(@Param("name") String name);
-
-
-    Employee findBySurname(String surname); // метод сгенерится автоматом
 
     @Modifying
     @Query("DELETE FROM Employee e WHERE e.id = :id")

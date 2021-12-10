@@ -1,8 +1,9 @@
-package com.example.spring;
+package com.example.spring.config;
 
 public interface AppConstants {
 
     String PROPERTY_NAME_DATABASE_DRIVER = "spring.datasource.driver-class-name";
+    String PROPERTY_NAME_DB_DRIVER = "spring.datasource.driverClassName";
     String PROPERTY_NAME_DATABASE_URL = "spring.datasource.url";
     String PROPERTY_NAME_DATABASE_USERNAME = "spring.datasource.username";
     String PROPERTY_NAME_DATABASE_PASSWORD = "spring.datasource.password";
