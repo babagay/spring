@@ -74,7 +74,8 @@ class EmployeeTest {
 
             //addUserToDepartmentTest();
             //getDepartmentTest();
-            deleteDepartmentTest();
+            //deleteDepartmentTest();
+            uniDirectTest();
 
         }
         finally {
@@ -617,5 +618,29 @@ class EmployeeTest {
         currentSession.delete(user);
 
         currentSession.getTransaction().commit();
+    }
+
+    // One-to-Many uni-directional test
+    // Employee + Department
+    // Связь между сущностями реализована через Department
+    static void uniDirectTest(){
+        DepartmentUni department = new DepartmentUni();
+        department.setName("Underground investigations");
+
+        EmployeeUni user = new EmployeeUni();
+        user.setName("SofiaU");
+        user.setSurname("Blank U.");
+        EmployeeUni user2 = new EmployeeUni();
+        user.setName("Oleg");
+        user.setSurname("Youruk");
+
+        department.addEmployee(user);
+        department.addEmployee(user2);
+
+        currentSession.beginTransaction();
+        currentSession.save(department); // сохраняем Department ,который является SRC -таблицей
+        currentSession.getTransaction().commit();
+
+        System.out.println("== uniDirectTest DONE");
     }
 }
