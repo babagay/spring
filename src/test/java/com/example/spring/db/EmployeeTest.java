@@ -31,6 +31,7 @@ class EmployeeTest {
     private final static EntityManagerFactory entityManagerFactory = context.getBean(EntityManagerFactory.class);
     private final static EmployeeRepository employeeRepository = context.getBean(EmployeeRepository.class);
     private final static EmployeeService employeeService = context.getBean(EmployeeService.class);
+    private final static DepartmentUniRepository depUniRepository = context.getBean(DepartmentUniRepository.class);
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -75,7 +76,8 @@ class EmployeeTest {
             //addUserToDepartmentTest();
             //getDepartmentTest();
             //deleteDepartmentTest();
-            uniDirectTest();
+            //uniDirectTest();
+            uniDirectDepartmentTest();
 
         }
         finally {
@@ -643,4 +645,71 @@ class EmployeeTest {
 
         System.out.println("== uniDirectTest DONE");
     }
+
+    /**
+     * тип загрузки юзеров в сущности DepartmentUni - LAZY,
+     * поэтому, поле employees=<uninitialized>
+     */
+    static void uniDirectDepartmentTest(){
+        
+        // [A] здесь все работает нормально        
+        currentSession.beginTransaction();
+        
+        DepartmentUni department = currentSession.get(DepartmentUni.class, 6L);
+
+        System.out.println("========== "  + department.getName());
+
+        //department.getEmployees().size(); // [!] либо использовать обращенеи к коллекции, либо EAGER (в случае, когда есть Session.close())
+        
+        currentSession.getTransaction().commit();
+        currentSession.close();
+
+        // странно, но даже при загрузке записи после коммита (и связи LAZY) employees загружаются
+        // что наводит на мысль , что открыта еще одна сессия, через которую это делается
+        // в то время, как репозиторий использует свою изолированную сессию
+        // [!] если дописать Session.close(), код свалится c LazyInitializationException - failed to lazily initialize a collection
+        // В логах отсутсвует запрос к employees
+        // Однако, при обращении к коллекции ДО закрытия сессии, напр, взять её size(), все работает нормально
+        // Интересно, что в таком варианте update() делать НЕ надо
+        // С другой стороны, при замене LAZY на EAGER запрос расширяется выражением left outer join
+        // и юзеры сразу вытягиваются из employees
+        // Стандартный хак тоже работает:
+        // getSession().update(department); - взять ещё одну сессию и приаттачить department
+        System.out.println(  "========== " +  department.getEmployees()   );
+        
+
+        /*
+        // [B] это вариант работы через посредника, анпр репозиторий, а не через сессию 
+        // Здесь вылазит LazyInitializationException при типе загрузки LAZY
+        // и could not initialize proxy при типе EAGER
+        // Чтобы его убрать, надо делать session.update()
+        DepartmentUni dep = depUniRepository.byId(6L);
+        System.out.println("=========== " + dep.getName());
+        currentSession.update(dep);
+        System.out.println(dep.getEmployees());
+        */
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

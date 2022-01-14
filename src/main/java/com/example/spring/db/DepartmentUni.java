@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.HashSet;
@@ -55,10 +56,15 @@ public class DepartmentUni {
 
     // One относится к текущей таблице, т.е к Department,
     // т.к. в одном отделе много пользователей
+    // [!] для связей м и @OneToOne и @ManyToOne по дефолту стоит EAGER 
+    //      Инфа о связанных сущностях загружается сразу, в основном запросе
+    //      для @MOneToMany и @ManyToMany - LAZY, т.к. это грозит подгрузкой коллекций
+    //      Инфа о связанныйх сущностях подгружается черезе дополнительные запросы по мере обращения к полям
+    //      Соответсвенно, т.к. 1 отдел вмещает много людей, здесь оправдано использование LAZY
     @OneToMany(
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
-            targetEntity = Employee.class
+            targetEntity = EmployeeUni.class
             // mappedBy = "department"  // это поле в сущности Employee, которое хранит объект Department
             // [!] в случае uni-direct связи - не используется
     )
