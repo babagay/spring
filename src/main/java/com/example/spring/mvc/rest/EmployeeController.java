@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,8 +62,8 @@ public class EmployeeController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<com.example.spring.dto.Employee> employeeOne(Long id) {
+    @GetMapping("{id}")
+    public ResponseEntity<com.example.spring.dto.Employee> employeeOne(@PathVariable Long id) {
         com.example.spring.dto.Employee result;
         result = employeeService.getById(id)
                 .map(Mapper::employeeEntityToDTO)

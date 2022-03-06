@@ -39,7 +39,8 @@ public class EmployeeCommunication {
         return users;
     }
  
-    public Employee getOne(@RequestParam Long id) {
+    // [!] НЕ работает
+    public Employee getOne(Long id) {
 
         Employee result = null;
         try {

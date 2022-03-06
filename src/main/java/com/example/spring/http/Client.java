@@ -42,9 +42,13 @@ public class Client {
     }
 
     private static void getEmployeeOneTest(){
-        Long id = 1L;
+        Long id = 3L;
         Employee user = employeeRestService.getOne(id);
 
-        System.out.println(user.getName() + " " + user.getSurname());
+        if (user != null)
+            System.out.println(user.getName() + " " + user.getSurname());
+        else {
+            System.out.println("==USER IS EMPTY==");
+        }
     }
 }
