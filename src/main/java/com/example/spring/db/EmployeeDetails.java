@@ -1,5 +1,8 @@
 package com.example.spring.db;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.CascadeType;
@@ -16,6 +19,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "details")
 @Transactional
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = EmployeeDetails.class)
 public class EmployeeDetails {
 
     @Id
@@ -45,6 +49,7 @@ public class EmployeeDetails {
             // аннотациями поля Employee.details
             mappedBy = "details"
     )
+    @JsonBackReference
     private Employee user;
 
     public Long getId() {

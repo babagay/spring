@@ -14,6 +14,8 @@ import org.aspectj.lang.reflect.SourceLocation;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * [!] по умолчанию аннотация не доступна - надо вручную добавить пакет AspectJ Weaver
  * ставил очень сложно
@@ -179,12 +181,12 @@ public class LoggingAspect {
     //  По сути, является враппером
     // Around адвайс позволяет ловить исключения
     @Around(value = "Pointcuts.getStudentPointcut()")
-    public Student onGetStudentAdvice(ProceedingJoinPoint joinPoint) throws Exception {
+    public Student onGetStudentAdvice(@NotNull ProceedingJoinPoint joinPoint) {
         String kind = joinPoint.getKind();
         SourceLocation location = joinPoint.getSourceLocation();
         Object target = joinPoint.getTarget();
 
-        Student result = null;
+        Student result;
         Student studentFake = new Student("Fake student", 5, 9.0);
 
         long time = 0;
@@ -210,6 +212,29 @@ public class LoggingAspect {
 
         System.out.println("Advice: Around. Student got. " + kind + ". " + location + ". " + target + ". " + time);
 
+        return result;
+    }
+
+    @Around("Pointcuts.getAnyMethodEmployeeController()")
+    public Object onAnyUserControllerMethodCall(ProceedingJoinPoint joinPoint) throws Exception {
+
+        Object result;
+        
+        String method = joinPoint.getSignature().getName();
+        
+        System.out.println("Method called: " + method);
+
+        try {
+            result = joinPoint.proceed();
+        }
+        catch (Throwable e) {
+            System.out.println("Method " + method + " triggered ex: " + e.getMessage());
+            throw new Exception(e);
+            //e.printStackTrace();
+        }
+
+        System.out.println("Method "+ method +" finished with result: " + result);
+        
         return result;
     }
 }

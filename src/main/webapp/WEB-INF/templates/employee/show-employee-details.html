@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="fragment.basic :: head"></head>
+<body>
+
+
+<div class="page-header">
+  <h1  class="ml-1" style="margin-left: 20px;">Details</h1>
+</div>
+
+<table>
+<tr th:each="error: ${errors}">
+  <td th:text="${error.getObjectName()}" > </td>
+  <td th:text="${error.getDefaultMessage()}" > </td>
+</tr>
+</table>
+
+<p th:object="${dto}">
+  <span  th:field="${name != null}?*{name}"></span>,
+  <span  th:field="${surname != null}?*{surname}"></span>
+  <span  th:field="${phoneNumber != null}?*{phoneNumber}"> </span> 
+</p>
+ 
+</body>
+</html>

@@ -1,6 +1,6 @@
 package com.example.spring.db;
 
-import com.example.spring.config.AppConfig;
+import com.example.spring.config.WebConfig;
 import com.example.spring.service.EmployeeService;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -23,7 +23,11 @@ class EmployeeTest {
 
     static Session session;
 
-    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    // [!] по идее, можно выбрать тот или другой конфиг
+    // но работает только с первым
+    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(WebConfig.class);
+    //private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Application.class);
+    
     //private final static Session session = context.getBean(Session.class);
     // альтернативный вариант получения сессии
     private final static Session currentSession = context.getBean(Session.class, "currentSession");
@@ -55,7 +59,7 @@ class EmployeeTest {
             //testDao();
             //testRepository();
             //testCreate();
-            //testCreate2();
+            testCreate2();
             //dropUser();
             //dropUser2();
             //dropUser3();
@@ -77,7 +81,7 @@ class EmployeeTest {
             //getDepartmentTest();
             //deleteDepartmentTest();
             //uniDirectTest();
-            uniDirectDepartmentTest();
+            //uniDirectDepartmentTest();
 
         }
         finally {
@@ -267,10 +271,13 @@ class EmployeeTest {
 
     public static void testCreate2() throws Exception {
         Employee user = new Employee();
-        user.setName("Jilly");
-        user.setSurname("Idol");
-        user.setDepartment(new Department());
-
+        user.setName("Volya POl__");
+        user.setSurname("Kienko GOL__");
+        user.setDepartment(new Department("New Department 3")); // OK - если создавать новый отдел, работает
+        // [!] Если брать готовый департмент, возникают проблемы :
+        //       detached entity passed to persist: com.example.spring.db.Department
+        // Department department  = currentSession.get(Department.class, 4L);        
+        // user.setDepartment(department);
 
         employeeService.create(user);
 

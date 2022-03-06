@@ -3,13 +3,15 @@ package com.example.spring.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration //  this marks the class as a source of bean definitions
 @EnableConfigurationProperties //  this binds and validates the external configurations to a configuration class
-//@ConfigurationProperties(prefix = "foo") // this annotation is used to enable @ConfigurationProperties annotated beans in the Spring application
+@ConfigurationProperties(prefix = "spring") // this annotation is used to enable @ConfigurationProperties annotated beans in the Spring application
+@PropertySource("classpath:application.yml")
 public class YamlConfig {
 
     private String name;

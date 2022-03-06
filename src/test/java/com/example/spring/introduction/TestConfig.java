@@ -1,12 +1,12 @@
 package com.example.spring.introduction;
 
-import com.example.spring.config.AppConfig;
+import com.example.spring.config.WebConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class TestConfig {
 
     // использование конфига на основе джава кода
-    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(WebConfig.class);
 
     public static void main(String[] args) {
 

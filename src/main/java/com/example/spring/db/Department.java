@@ -1,5 +1,9 @@
 package com.example.spring.db;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +18,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "departments")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Department.class)
 public class Department {
 
     @Id
@@ -37,9 +42,14 @@ public class Department {
             targetEntity = Employee.class,
             mappedBy = "department"  // это поле в сущности Employee, которое хранить объект Department
     )
+    @JsonBackReference
     private Set<Employee> employees;
 
     public Department() {
+    }
+
+    public Department(String name) {
+        this.name = name;
     }
 
     public Long getId() {

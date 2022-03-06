@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="fragment.basic :: head"></head>
+<body>
+
+
+<div class="page-header">
+  <h1  class="ml-1" style="margin-left: 20px;">Employee Home</h1>
+</div>
+
+<a href="/employee/askdetails">Add Employee</a><br>
+
+<ul th:each="user: ${users}">
+<!--  Более чистый и простой способ сделать это-->
+<!--  <a href="somepage.html" th:href="@{|/my/url/${variable}|}">A Link</a>-->
+  <li><a th:href="@{'/employee/showdetails/?name=' + ${user.getName()}}" ><span th:text="${user.getName}"></span></a></li>
+</ul>
+
+</body>
+</html>

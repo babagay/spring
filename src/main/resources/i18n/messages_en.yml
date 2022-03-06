@@ -1,0 +1,9 @@
+validation:
+  basic:
+    required: This field is required.
+    username:
+      size: Username must be from 6 to 32 chars.
+      duplication: Such username is already exists.
+    password:
+      size: Password must be from 6 to 32 chars.
+      matching: Password don't match.

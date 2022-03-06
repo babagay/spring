@@ -1,6 +1,7 @@
 package com.example.spring.db;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Query;
 import java.util.Collection;
@@ -12,6 +13,8 @@ import java.util.Optional;
  * предоставляет CRUD-операции
  */
 @Component
+// @Transactional - может вызвать проблемы BeanNotOfRequiredTypeException: Bean named 'employeeDao' is expected to be of type 'com.example.spring.db.EmployeeDao' but was actually of type 'com.sun.proxy.$Proxy96'
+// https://github.com/playframework/play-spring-loader/issues/13
 public class EmployeeDao extends AbstractDao<Employee> implements Dao<Employee> {
 
     public Employee findById(long id) {

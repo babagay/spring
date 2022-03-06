@@ -1,12 +1,12 @@
 package com.example.spring.aop;
 
-import com.example.spring.config.AppConfig;
+import com.example.spring.config.WebConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 // тестирование аспектов на примере Library
 class LibraryTest {
 
-    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    private static final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(WebConfig.class);
 
     private final static Library lib = context.getBean("libraryBean", Library.class);
     private final static UniLibrary uniLib = context.getBean("uniLib", UniLibrary.class);

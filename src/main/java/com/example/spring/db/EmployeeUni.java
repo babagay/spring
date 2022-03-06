@@ -1,5 +1,8 @@
 package com.example.spring.db;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.CascadeType;
@@ -19,6 +22,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "employees")
 @Transactional
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = EmployeeUni.class)
 public class EmployeeUni {
 
     @Id
@@ -37,6 +41,7 @@ public class EmployeeUni {
             cascade = {CascadeType.PERSIST, CascadeType.REFRESH}
     )
     //@JoinColumn(name = "details_id", referencedColumnName = "id", nullable = true) // details_id - столбец в т. employees
+    @JsonManagedReference
     private EmployeeDetails details;
 
     public void setId(Long id) {

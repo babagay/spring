@@ -1,5 +1,10 @@
 package com.example.spring.db;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,6 +44,7 @@ import java.util.Set;
 */
 @Entity
 @Table(name = "departments")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = DepartmentUni.class)
 public class DepartmentUni {
     @Id
     @Column
@@ -70,6 +76,7 @@ public class DepartmentUni {
     )
     @JoinColumn(name = "department_id") // столбец target-таблицы employees, который содержит FK
     // [!] В случае bi-direct связи эта аннотация использовалась в сущности Employee
+    @JsonBackReference
     private Set<EmployeeUni> employees;
 
     public DepartmentUni() {

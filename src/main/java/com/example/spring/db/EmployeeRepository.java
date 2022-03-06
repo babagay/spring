@@ -19,14 +19,14 @@ import javax.persistence.PersistenceContext;
 @Repository
 @Transactional
 @EnableTransactionManagement
-public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+public interface  EmployeeRepository extends JpaRepository<Employee, Long> {
 
     // [!] можно генерировать такие методы,
     // кликая на полях напротив поля Department department в классе Employee
     boolean existsByDepartment(Department department);
 
     Employee findBySurname(String surname); // метод также создан автоматом
-
+     
     @Query("select e from Employee e where e.id = ?1")
     Employee retrieveById(Long id);
 

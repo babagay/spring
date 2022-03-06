@@ -1,6 +1,7 @@
 package com.example.spring.db;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.LockModeType;
 import java.util.Collection;
@@ -8,8 +9,7 @@ import java.util.Optional;
 
 @Component
 public class DetailsDao extends AbstractDao<EmployeeDetails> implements Dao<EmployeeDetails> {
-
-
+ 
     @Override
     public Optional<EmployeeDetails> get(long id) {
         //return Optional.ofNullable(entityManager.find(EmployeeDetails.class, id, LockModeType.READ));

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:replace="fragment.basic :: head"></head>
+<body>
+
+
+<div class="page-header">
+  <h1 th:text="#{label.page.home.title}" class="ml-1" style="margin-left: 20px;"></h1>
+</div>
+
+<p>
+  <span th:text="#{greeting}"></span>,
+  <span th:text="${authName}">_authName_</span> 
+  <span th:text="${userSurname}"> </span>
+  (<span th:text="${id}"> </span>)
+</p>
+
+<br>
+<br>
+<a href="/employee">Employee</a>
+
+
+<div sec:authorize="isAuthenticated()">
+  Authenticated as <span sec:authentication="name"></span></div>
+
+<!--<div th:replace="fragment.basic :: 'footer'">-->
+<!--  &copy; 2016 The Static Templates-->
+<!--</div>-->
+</body>
+</html>

@@ -52,5 +52,8 @@ public class Pointcuts {
     public void getStudentPointcut() {
     }
 
+    @Pointcut("execution(* com.example.spring.mvc.controller.EmployeeController.*(..))")
+    public void getAnyMethodEmployeeController() {
+    }
 
 }
