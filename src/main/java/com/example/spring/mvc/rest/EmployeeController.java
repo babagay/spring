@@ -2,6 +2,7 @@ package com.example.spring.mvc.rest;
 
 import com.example.spring.db.Employee;
 import com.example.spring.dto.Mapper;
+import com.example.spring.mvc.exception.NoSuchEmployeeException;
 import com.example.spring.service.EmployeeService;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,11 +64,17 @@ public class EmployeeController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<com.example.spring.dto.Employee> employeeOne(@PathVariable Long id) {
+    public ResponseEntity<com.example.spring.dto.Employee> employeeOne(@PathVariable Long id) throws NoSuchEmployeeException {
         com.example.spring.dto.Employee result;
+        
+        // odo wrap
         result = employeeService.getById(id)
                 .map(Mapper::employeeEntityToDTO)
                 .orElse(null);
+        
+        if(result == null)
+            throw new NoSuchEmployeeException();
+        
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
